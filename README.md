@@ -1,5 +1,9 @@
 # WiFi Manager Plugin for Headwind MDM
 
+This project is a plugin for the open source mobile device management system for Android:
+
+https://h-mdm.com
+
 ## Building
 
 Run in command line:
