@@ -1,0 +1,65 @@
+<!--
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ WiFi Manager Plugin
+  ~
+  ~ Copyright (C) 2020 Headwind Solutions LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">WiFi Manager</string>
+
+    <string name="wifi">Wi-Fi</string>
+    <string name="add">Добавить сеть…</string>
+    <string name="error_load_config">Не удалось загрузить конфигурацию</string>
+    <string name="no_items">Нет доступных сетей</string>
+    <string name="connected">Подключено</string>
+    <string name="have_protection">Защищено</string>
+    <string name="no_protection">Без защиты</string>
+    <string name="signal_level">Уровень сигнала</string>
+    <string name="encryption_type">Шифрование</string>
+    <string name="password">Пароль</string>
+    <string name="no_encryption">Без шифрования</string>
+    <string name="speed">Скорость</string>
+    <string name="ip">IP адрес</string>
+    <string name="no">Нет</string>
+    <string name="connect">ПОДКЛЮЧИТЬСЯ</string>
+    <string name="disconnect">ОТКЛЮЧИТЬСЯ</string>
+    <string name="delete_network">ЗАБЫТЬ СЕТЬ</string>
+    <string name="close">ЗАКРЫТЬ</string>
+    <string name="need_enable_location_services">Для сканирования WiFi сетей необходимо включить сервис определения местоположения.</string>
+    <string name="enable">Включить</string>
+    <string name="exit">Выход</string>
+    <string name="need_location_permissions">Для сканирования WiFi сетей необходимо разрешить приложению доступ к определению местоположения.</string>
+    <string name="provide">Предоставить</string>
+    <string name="app_not_config">Приложение не сконфигурировано. Обратитесь к Вашему администратору.</string>
+    <string name="mbps">Mbps</string>
+    <string name="password_toast">Введите пароль (не менее 8 символов).</string>
+    <string name="disconnection">ОТКЛЮЧЕНИЕ…</string>
+    <string name="connection">ПОДКЛЮЧЕНИЕ…</string>
+    <string name="failed_connect_to">Не удалось подключиться к </string>
+    <string name="wrong_password">Неправильный пароль.</string>
+    <string name="error">Ошибка: </string>
+    <string name="error_on_connection">Ошибка при подключении.</string>
+
+    <string-array name="signal_levels">
+        <item>Нет сигнала</item>
+        <item>Плохой</item>
+        <item>Средний</item>
+        <item>Хороший</item>
+        <item>Отличный</item>
+    </string-array>
+</resources>

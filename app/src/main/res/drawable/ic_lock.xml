@@ -1,0 +1,25 @@
+<!--
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ WiFi Manager Plugin
+  ~
+  ~ Copyright (C) 2020 Headwind Solutions LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<vector android:height="192dp" android:viewportHeight="32"
+    android:viewportWidth="32" android:width="192dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#000000" android:pathData="M24,11L21.7,11L21.7,7.3C21.7,4.2 19.2,1.6 16,1.6C12.9,1.6 10.3,4.1 10.3,7.3L10.3,11L8,11C6.7,11 5.7,12 5.7,13.3L5.7,26.6C5.7,27.9 6.7,28.9 8,28.9L24,28.9C25.3,28.9 26.3,27.9 26.3,26.6L26.3,13.3C26.3,12 25.3,11 24,11ZM12.3,7.3C12.3,5.3 13.9,3.6 16,3.6C18,3.6 19.7,5.2 19.7,7.3L19.7,11L12.4,11L12.4,7.3ZM24.3,26.7C24.3,26.9 24.2,27 24,27L8,27C7.8,27 7.7,26.9 7.7,26.7L7.7,13.3C7.7,13.1 7.8,13 8,13L24,13C24.2,13 24.3,13.1 24.3,13.3L24.3,26.7Z"/>
+</vector>

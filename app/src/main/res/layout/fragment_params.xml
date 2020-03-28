@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ WiFi Manager Plugin
+  ~
+  ~ Copyright (C) 2020 Headwind Solutions LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_16">
+
+                <TextView
+                    android:id="@+id/titleLevel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/signal_level"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/t_size_18" />
+
+                <TextView
+                    android:id="@+id/level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color4"
+                    android:textSize="@dimen/t_size_16" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:background="@color/color2"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/titleSpeed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:text="@string/speed"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/t_size_18" />
+
+                <TextView
+                    android:id="@+id/speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color4"
+                    android:textSize="@dimen/t_size_16" />
+
+                <LinearLayout
+                    android:id="@+id/dividerSpeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:background="@color/color2"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/titleIP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:text="@string/ip"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/t_size_18" />
+
+                <TextView
+                    android:id="@+id/ip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color4"
+                    android:textSize="@dimen/t_size_16" />
+
+                <LinearLayout
+                    android:id="@+id/dividerIP"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:background="@color/color2"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/titleMAC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:text="MAC"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/t_size_18" />
+
+                <TextView
+                    android:id="@+id/mac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color4"
+                    android:textSize="@dimen/t_size_16" />
+
+                <LinearLayout
+                    android:id="@+id/dividerMAC"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:background="@color/color2"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/titleEncryption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:text="@string/encryption_type"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/t_size_18" />
+
+                <TextView
+                    android:id="@+id/encryption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color4"
+                    android:textSize="@dimen/t_size_16" />
+
+                <LinearLayout
+                    android:id="@+id/dividerEncryption"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:background="@color/color2"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/titlePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_16"
+                    android:text="@string/password"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/t_size_18" />
+
+                <FrameLayout
+                    android:id="@+id/layoutPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/bg_password"
+                        android:ems="10"
+                        android:gravity="start|center_vertical"
+                        android:imeOptions="actionDone|actionGo|actionSend"
+                        android:inputType="textPassword"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:padding="@dimen/padding_8"
+                        android:textSize="@dimen/t_size_16" />
+
+                    <ImageView
+                        android:id="@+id/passwordVisibility"
+                        android:layout_width="@dimen/size_20"
+                        android:layout_height="@dimen/size_20"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_margin="@dimen/margin_16"
+                        app:srcCompat="@drawable/ic_visibility_off" />
+                </FrameLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/layoutError"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color7"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/errorDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="@dimen/padding_8"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/t_size_16"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/closeError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color3"
+                android:gravity="center"
+                android:padding="@dimen/padding_16"
+                android:text="@string/close"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/t_size_18" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_16"
+        android:background="@drawable/bg_action"
+        android:gravity="center"
+        android:padding="@dimen/padding_8"
+        android:text="@string/connect"
+        android:textColor="@color/color1"
+        android:textSize="@dimen/t_size_18" />
+
+</LinearLayout>
