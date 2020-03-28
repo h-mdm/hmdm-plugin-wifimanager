@@ -1,6 +1,6 @@
 # WiFi Manager Plugin for Headwind MDM
 
-This project is a plugin for the open source mobile device management system for Android:
+This project is an open source WiFi manager for Android. The network configuration is remotely managed on the server. It is a plugin for the open source mobile device management system for Android:
 
 https://h-mdm.com
 
