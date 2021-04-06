@@ -28,8 +28,8 @@ android {
         applicationId "com.hmdm.wifimanager"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 16
-        versionName "1.14"
+        versionCode 17
+        versionName "1.15"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -43,6 +43,20 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    flavorDimensions "all"
+
+    productFlavors {
+        // Main build
+        regular {
+        }
+        // A build using com.hmdm as a shared user ID.
+        // This variant works on Android 10+ with Headwind MDM, but requires the same
+        // signature as Headwind MDM
+        shared {
+        }
+    }
+
     applicationVariants.all { variant ->
         if (variant.name.contains("debug")) {
             variant.outputs.all { output ->
