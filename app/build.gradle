@@ -28,8 +28,8 @@ android {
         applicationId "com.hmdm.wifimanager"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 17
-        versionName "1.15"
+        versionCode 18
+        versionName "1.18"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
