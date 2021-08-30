@@ -35,30 +35,14 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
-    signingConfigs {
-        common {
-            // The original keystore of Headwind MDM has been removed from the code
-            // to avoid occasional compromising of private keys.
-            // You may wish to sign the app with your own keys, please follow
-            // Android developer guide how to generate your keys.
-            // If you still with to sign the app with original Headwind MDM keys,
-            // please contact Headwind MDM team to get a key store file.
-            keyAlias 'kiosk'
-            keyPassword 'aGVhZHdpbmRSdWxlS2lvc2s='
-            storeFile file('keystore/keystore.jks')
-            storePassword 'aGVhZHdpbmRNYWlu'
-        }
-    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.common
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.common
         }
     }
     compileOptions {
