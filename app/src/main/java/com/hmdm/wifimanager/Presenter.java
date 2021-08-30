@@ -581,6 +581,7 @@ public class Presenter {
      * Get the networkId of the network having the best signal strength.
      * @return
      */
+    @SuppressWarnings("MissingPermission")
     private int getBestWiFiNetwork() {
         if (wifiManager != null && lastScan != null) {
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
@@ -725,6 +726,7 @@ public class Presenter {
     }
 
     @Nullable
+    @SuppressWarnings("MissingPermission")
     private WifiConfiguration getWiFiConfigById(int id) {
         if (wifiManager != null) {
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
@@ -840,6 +842,7 @@ public class Presenter {
      * @param ssid
      * @return
      */
+    @SuppressWarnings("MissingPermission")
     private WifiConfiguration searchConfigured(String ssid) {
         List<WifiConfiguration> wifiConfigurationList = wifiManager.getConfiguredNetworks();
         if (wifiConfigurationList != null) {
@@ -853,6 +856,7 @@ public class Presenter {
         return null;
     }
 
+    @SuppressWarnings("MissingPermission")
     private WifiConfiguration searchConfigured(int id) {
         List<WifiConfiguration> wifiConfigurationList = wifiManager.getConfiguredNetworks();
         if (wifiConfigurationList != null) {
