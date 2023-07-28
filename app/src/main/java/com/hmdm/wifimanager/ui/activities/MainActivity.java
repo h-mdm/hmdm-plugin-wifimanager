@@ -21,6 +21,8 @@
 
 package com.hmdm.wifimanager.ui.activities;
 
+import static android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,10 +45,10 @@ import com.google.gson.Gson;
 import com.hmdm.MDMPushHandler;
 import com.hmdm.MDMPushMessage;
 import com.hmdm.MDMService;
+import com.hmdm.wifimanager.Presenter;
 import com.hmdm.wifimanager.R;
 import com.hmdm.wifimanager.model.MDMConfig;
 import com.hmdm.wifimanager.model.WiFiItem;
-import com.hmdm.wifimanager.Presenter;
 import com.hmdm.wifimanager.ui.fragments.MainFragment;
 import com.hmdm.wifimanager.ui.fragments.ParamsFragment;
 
@@ -54,8 +56,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 
 public class MainActivity extends AppCompatActivity implements MDMService.ResultHandler {
     private final static int REQUEST_PERMISSIONS = 100;
@@ -362,6 +362,9 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
             config = new MDMConfig();
 
         Presenter.getInstance().setLastConfig(config);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            Presenter.getInstance().suggestNetworks(this, config);
+        }
     }
 
     private void showAlertNoConfig() {

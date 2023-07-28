@@ -21,10 +21,15 @@
 
 package com.hmdm.wifimanager.ui.fragments;
 
+import static android.net.wifi.WifiManager.ERROR_AUTHENTICATING;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
@@ -43,21 +48,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.hmdm.MDMService;
+import com.hmdm.wifimanager.Presenter;
 import com.hmdm.wifimanager.R;
 import com.hmdm.wifimanager.Utils;
 import com.hmdm.wifimanager.model.Capabilities;
 import com.hmdm.wifimanager.model.WiFiItem;
-import com.hmdm.wifimanager.Presenter;
 
 import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static android.net.wifi.WifiManager.ERROR_AUTHENTICATING;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class ParamsFragment extends Fragment implements IParamsView, View.OnClickListener {
     private final static String TAG = "HeadwindWiFi";
@@ -273,6 +274,11 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
     }
 
     private void action() {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            Toast.makeText(getActivity(), R.string.wifi_manage_error, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (Presenter.getInstance().getConnectionInfo() == null
                 && !Capabilities.parse(item.scanResult.capabilities).isOpen()
                 && (TextUtils.isEmpty(password.getText().toString()) || password.getText().toString().length() < 8)) {

@@ -54,6 +54,7 @@
     <string name="wrong_password">Неправильный пароль.</string>
     <string name="error">Ошибка: </string>
     <string name="error_on_connection">Ошибка при подключении.</string>
+    <string name="wifi_manage_error">На Android 11 и выше используйте системный WiFi менеджер для переключения сетей.</string>
 
     <string-array name="signal_levels">
         <item>Нет сигнала</item>

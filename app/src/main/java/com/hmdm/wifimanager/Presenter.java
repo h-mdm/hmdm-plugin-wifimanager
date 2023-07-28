@@ -21,17 +21,28 @@
 
 package com.hmdm.wifimanager;
 
+import static android.net.wifi.WifiManager.ERROR_AUTHENTICATING;
+import static android.net.wifi.WifiManager.EXTRA_RESULTS_UPDATED;
+import static android.net.wifi.WifiManager.NETWORK_STATE_CHANGED_ACTION;
+import static android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION;
+import static android.net.wifi.WifiManager.SUPPLICANT_STATE_CHANGED_ACTION;
+import static android.net.wifi.WifiManager.WIFI_STATE_CHANGED_ACTION;
+import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
+import static android.net.wifi.WifiManager.WIFI_STATE_ENABLED;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.MacAddress;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -52,15 +63,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static android.net.wifi.WifiManager.ERROR_AUTHENTICATING;
-import static android.net.wifi.WifiManager.EXTRA_RESULTS_UPDATED;
-import static android.net.wifi.WifiManager.NETWORK_STATE_CHANGED_ACTION;
-import static android.net.wifi.WifiManager.SCAN_RESULTS_AVAILABLE_ACTION;
-import static android.net.wifi.WifiManager.SUPPLICANT_STATE_CHANGED_ACTION;
-import static android.net.wifi.WifiManager.WIFI_STATE_CHANGED_ACTION;
-import static android.net.wifi.WifiManager.WIFI_STATE_DISABLED;
-import static android.net.wifi.WifiManager.WIFI_STATE_ENABLED;
 
 public class Presenter {
     private final static String TAG = "HeadwindWiFi";
@@ -961,5 +963,35 @@ public class Presenter {
 
     public NetworkInfo.State getConnectedState() {
         return connectedState;
+    }
+
+    public int suggestNetworks(Context context, MDMConfig config) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+            return 0;
+        }
+
+        final List<WifiNetworkSuggestion> suggestionsList =
+                new ArrayList<WifiNetworkSuggestion>();
+
+        for (AllowedItem item : config.allowed) {
+            final WifiNetworkSuggestion.Builder builder =
+                    new WifiNetworkSuggestion.Builder();
+            if (item.ssid != null) {
+                builder.setSsid(item.ssid);
+            }
+            if (item.bssid != null) {
+                builder.setBssid(MacAddress.fromString(item.bssid));
+            }
+            if (item.password != null) {
+                builder.setWpa2Passphrase(item.password);
+            }
+            WifiNetworkSuggestion suggestion = builder.build();
+            suggestionsList.add(suggestion);
+        }
+        final WifiManager wifiManager =
+                (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+
+        final int status = wifiManager.addNetworkSuggestions(suggestionsList);
+        return status;
     }
 }

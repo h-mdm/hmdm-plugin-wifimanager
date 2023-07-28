@@ -22,32 +22,39 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdkVersion 31
+    buildToolsVersion "31.0.0"
     defaultConfig {
         applicationId "com.hmdm.wifimanager"
         minSdkVersion 17
-        // TargetSdkVersion should be 28, because in API 29 the WiFi management functions are replaced by a stubs
+        // To manage WiFi on older Android versions, TargetSdkVersion should be 28,
+        // because in API 29 the WiFi management functions are replaced by a stubs
         // See deprecation notice here: https://developer.android.com/reference/android/net/wifi/WifiManager
-        targetSdkVersion 28
-        versionCode 19
-        versionName "1.19"
+        targetSdkVersion 31
+        versionCode 20
+        versionName "1.20"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
+//    signingConfigs {
+//        config {
+//        }
+//    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.config
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.config
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     flavorDimensions "all"

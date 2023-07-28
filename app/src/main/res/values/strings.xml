@@ -54,6 +54,7 @@
     <string name="wrong_password">Wrong password.</string>
     <string name="error">Error: </string>
     <string name="error_on_connection">Connection error.</string>
+    <string name="wifi_manage_error">On Android 11 and above, use system WiFi manager to switch between networks.</string>
 
     <string-array name="signal_levels">
         <item>No signal</item>
