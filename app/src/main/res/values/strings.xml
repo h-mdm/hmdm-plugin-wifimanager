@@ -42,6 +42,7 @@
     <string name="close">CLOSE</string>
     <string name="need_enable_location_services">To scan WiFi networks, please turn on location service.</string>
     <string name="enable">Turn on</string>
+    <string name="run_anyway">Run anyway</string>
     <string name="exit">Exit</string>
     <string name="need_location_permissions">To scan WiFi networks, please allow the app to use location services.</string>
     <string name="provide">Allow</string>

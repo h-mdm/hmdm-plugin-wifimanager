@@ -24,8 +24,10 @@ package com.hmdm.wifimanager.ui.activities;
 import static android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
     private final static int REQUEST_PERMISSIONS = 100;
     private final static int REQUEST_LOCATION_SETTINGS = 110;
     private final static String TAG = "HeadwindWiFi";
+    private SharedPreferences preferences;
+    String disableLocationPref = "DISABLE_LOCATION";
 
     /**
      * Handler of Headwind MDM notifications.
@@ -78,11 +82,16 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
     private boolean mdmConnected = false;
     private PushHandler pushHandler;
 
+    private void initPreferences() {
+         preferences = getApplicationContext().getSharedPreferences("com.hmdm.wifimanager.PREFERENCES", Context.MODE_PRIVATE);
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        initPreferences();
 
         setSupportActionBar(toolbar);
 
@@ -91,13 +100,17 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
 
         if (savedInstanceState == null)
             addFragment(MainFragment.newInstance(), MainFragment.class.getSimpleName());
+
+        // Request permissions once only
+        needRequestPermissions(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        initPreferences();
 
-        if (!needRequestPermissions()) {
+        if (!needRequestPermissions(false)) {
             // Check location service for Android 9 only
             if (!needEnableLocationServices()) {
                 Presenter.getInstance().startScan();
@@ -161,7 +174,10 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
         return true;
     }
 
-    private boolean needRequestPermissions() {
+    private boolean needRequestPermissions(boolean doRequest) {
+        if (preferences.getBoolean(disableLocationPref, false)) {
+            return false;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ArrayList<String> request = new ArrayList<>();
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -169,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 request.add(Manifest.permission.ACCESS_COARSE_LOCATION);
 
-            if (request.size() > 0) {
+            if (request.size() > 0 && doRequest) {
                 String[] permissions = new String[request.size()];
                 permissions = request.toArray(permissions);
                 ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS);
@@ -183,12 +199,15 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
 
     private boolean needEnableLocationServices() {
         boolean needEnable = false;
+        if (preferences.getBoolean(disableLocationPref, false)) {
+            return false;
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             needEnable = true;
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             if (locationManager != null) {
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
                     needEnable = false;
             }
 
@@ -201,7 +220,14 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
                                 startActivityForResult(new Intent(ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_LOCATION_SETTINGS);
                             }
                         })
-                        .setNeutralButton(getString(R.string.exit), new DialogInterface.OnClickListener() {
+                        .setNeutralButton(getString(R.string.run_anyway), new DialogInterface.OnClickListener(){
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                preferences.edit().putBoolean(disableLocationPref, true).apply();
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.exit), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 finish();
@@ -238,6 +264,13 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
                                     String[] permissions = new String[request.size()];
                                     permissions = request.toArray(permissions);
                                     ActivityCompat.requestPermissions(MainActivity.this, permissions, REQUEST_PERMISSIONS);
+                                }
+                            })
+                            .setNeutralButton(getString(R.string.run_anyway), new DialogInterface.OnClickListener(){
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    preferences.edit().putBoolean(disableLocationPref, true).apply();
                                 }
                             })
                             .setNegativeButton(getString(R.string.exit), new DialogInterface.OnClickListener() {

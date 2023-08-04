@@ -42,6 +42,7 @@
     <string name="close">ЗАКРЫТЬ</string>
     <string name="need_enable_location_services">Для сканирования WiFi сетей необходимо включить сервис определения местоположения.</string>
     <string name="enable">Включить</string>
+    <string name="run_anyway">Без разрешения</string>
     <string name="exit">Выход</string>
     <string name="need_location_permissions">Для сканирования WiFi сетей необходимо разрешить приложению доступ к определению местоположения.</string>
     <string name="provide">Предоставить</string>
