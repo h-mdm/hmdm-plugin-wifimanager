@@ -47,6 +47,7 @@ import com.google.gson.Gson;
 import com.hmdm.MDMPushHandler;
 import com.hmdm.MDMPushMessage;
 import com.hmdm.MDMService;
+import com.hmdm.wifimanager.BuildConfig;
 import com.hmdm.wifimanager.Presenter;
 import com.hmdm.wifimanager.R;
 import com.hmdm.wifimanager.model.MDMConfig;
@@ -395,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
             config = new MDMConfig();
 
         Presenter.getInstance().setLastConfig(config);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+        if (BuildConfig.WIFI_SUGGESTION && Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             Presenter.getInstance().suggestNetworks(this, config);
         }
     }

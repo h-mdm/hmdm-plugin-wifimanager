@@ -50,3 +50,11 @@ Sample configuration setting up automatic configuration of a specified WiFi netw
 
 
 After you add this configuration attribute, click "Save" to apply the configuration.
+
+## Compatibility
+
+On Android 10 and above, the app works in managed (Device Owner) mode only. It should be signed with the same keys as the MDM agent, and use the same shared user. See the deprecation exemption comment here: https://developer.android.com/reference/android/net/wifi/WifiManager#disableNetwork(int)
+
+On Android 11 and 12, apparently due to permission-related bugs in Android OS, the app doesn't work even when running with Device Owner permissions. To make the app available on these OS versions, we added an optional flag WIFI_SUGGESTION, which switches to an alternative (WiFi suggestion) SDK, which is however less powerful and requires user interaction to manage WiFi networks.
+
+Starting with Android 13, the device owner permission issue is apparently fixed, and WiFi manager works well in the device owner mode.

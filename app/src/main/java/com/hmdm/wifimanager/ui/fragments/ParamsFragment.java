@@ -48,6 +48,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.hmdm.MDMService;
+import com.hmdm.wifimanager.BuildConfig;
 import com.hmdm.wifimanager.Presenter;
 import com.hmdm.wifimanager.R;
 import com.hmdm.wifimanager.Utils;
@@ -274,7 +275,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
     }
 
     private void action() {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+        if (BuildConfig.WIFI_SUGGESTION && Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
             Toast.makeText(getActivity(), R.string.wifi_manage_error, Toast.LENGTH_LONG).show();
             return;
         }

@@ -30,26 +30,39 @@ android {
         // To manage WiFi on older Android versions, TargetSdkVersion should be 28,
         // because in API 29 the WiFi management functions are replaced by a stubs
         // See deprecation notice here: https://developer.android.com/reference/android/net/wifi/WifiManager
-        targetSdkVersion 31
-        versionCode 21
-        versionName "1.21"
+        //
+        // To use WiFi suggestion API on Android 11 and 12, change targetSdkVersion to 31
+        // and set the build config field WIFI_SUGGESTION to true
+        //
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 28
+        versionCode 22
+        versionName "1.22"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        // To use WiFi suggestion API on Android 11 and 12, set this parameter to true
+        // and change the targetSdkVersion to 31+
+        buildConfigField("Boolean", "WIFI_SUGGESTION", "false")
     }
-//    signingConfigs {
-//        config {
-//        }
-//    }
+    signingConfigs {
+        config {
+            // Add the MDM agent keystore parameters here to build a working APK!
+            //storeFile file('/path/to/keystore.jks')
+            //storePassword 'myMdmAgentStorePassword'
+            //keyAlias 'myMdmAgentKey'
+            //keyPassword 'myMdmAgentKeyPassword'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.config
+            signingConfig signingConfigs.config
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.config
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {
