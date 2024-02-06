@@ -1,0 +1,67 @@
+<!--
+  ~ Headwind MDM: Open Source Android MDM Software
+  ~ https://h-mdm.com
+  ~
+  ~ WiFi Manager Plugin
+  ~
+  ~ Copyright (C) 2020 Headwind Solutions LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">WiFi Manager</string>
+
+    <string name="wifi">Wi-Fi</string>
+    <string name="add">Přidat síť…</string>
+    <string name="error_load_config">Nepodařilo se načíst konfiguraci</string>
+    <string name="no_items">Nejsou dostupné žádné sítě</string>
+    <string name="connected">Připojeno</string>
+    <string name="have_protection">Zabezpečeno</string>
+    <string name="no_protection">Nezabezpečeno</string>
+    <string name="signal_level">Síla signálu</string>
+    <string name="encryption_type">Šifrování</string>
+    <string name="password">Heslo</string>
+    <string name="no_encryption">Bez šifrování</string>
+    <string name="speed">Rychlost</string>
+    <string name="ip">IP adresa</string>
+    <string name="no">Ne</string>
+    <string name="connect">PŘIPOJIT</string>
+    <string name="disconnect">ODPOJIT</string>
+    <string name="delete_network">ZAPOMENOUT</string>
+    <string name="close">ZAVŘÍT</string>
+    <string name="need_enable_location_services">Pro sken Wifi sítí prosím zapněte lokalizační služby.</string>
+    <string name="enable">Zapnout</string>
+    <string name="run_anyway">Přesto spustit</string>
+    <string name="exit">Ukončit</string>
+    <string name="need_location_permissions">Pro sken Wifi sítí prosím povolte této aplikaci lokalizační služby.</string>
+    <string name="provide">Povolit</string>
+    <string name="app_not_config">Tato aplikace není nastavena. Prosím kontaktujte vašeho administrátora pro podrobnosti.</string>
+    <string name="mbps">Mbps</string>
+    <string name="password_toast">Zadejte heslo (8+ znaků).</string>
+    <string name="disconnection">ODPOJUJI…</string>
+    <string name="connection">PŘIPOJUJI…</string>
+    <string name="failed_connect_to">Nepodařilo se připojit k </string>
+    <string name="wrong_password">Špatné heslo.</string>
+    <string name="error">Chyba: </string>
+    <string name="error_on_connection">Chyba připojení.</string>
+    <string name="wifi_manage_error">Na Android 11 a výše použijte systémový Wifi Manager pro přepínání mezi sítěmi.</string>
+
+    <string-array name="signal_levels">
+        <item>Žádný signál</item>
+        <item>Slabý</item>
+        <item>Dostatečný</item>
+        <item>Dobrý</item>
+        <item>Výborný</item>
+    </string-array>
+</resources>
