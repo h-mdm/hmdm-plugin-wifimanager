@@ -24,6 +24,7 @@ package com.hmdm.wifimanager.ui.fragments;
 import static android.net.wifi.WifiManager.ERROR_AUTHENTICATING;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static android.view.View.resolveSize;
 
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
@@ -156,7 +157,11 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
             }
 
             Capabilities capabilities = Capabilities.parse(item.scanResult.capabilities);
-            encryption.setText(capabilities.format());
+            if(capabilities.format().equals("OPEN"))
+                encryption.setText(getString(R.string.encryption_open));
+            else
+                encryption.setText(capabilities.format());
+
 
             if (connectionInfo != null && Utils.getSSIDWithoutQuotes(connectionInfo.getSSID()).equals(item.scanResult.SSID)
                     && connectedState == NetworkInfo.State.CONNECTED) {

@@ -64,4 +64,5 @@
         <item>Good</item>
         <item>Excellent</item>
     </string-array>
+    <string name="encryption_open">None</string>
 </resources>
