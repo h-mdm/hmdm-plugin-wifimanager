@@ -24,7 +24,6 @@ package com.hmdm.wifimanager.ui.fragments;
 import static android.net.wifi.WifiManager.ERROR_AUTHENTICATING;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static android.view.View.resolveSize;
 
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
