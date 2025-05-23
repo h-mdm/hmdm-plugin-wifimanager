@@ -64,4 +64,5 @@
         <item>Dobrý</item>
         <item>Výborný</item>
     </string-array>
+    <string name="encryption_open">Žádné</string>
 </resources>

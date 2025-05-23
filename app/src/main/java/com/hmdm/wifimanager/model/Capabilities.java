@@ -175,12 +175,11 @@ public class Capabilities {
 
         if (capabilities.size() > 0) {
             for (Capability item : capabilities) {
-                if (item.authMethod == AuthMethod.OPEN)
-                    return "";
+                if (!TextUtils.isEmpty(result))
+                    break;
+                if (isOpen())
+                    return "OPEN";
                 else {
-                    if (!TextUtils.isEmpty(result))
-                        result += "/";
-
                     result += item.authMethod.name();
 
                     if (item.keyManagementAlgorithm != KeyManagementAlgorithm.NONE || item.chiperMethod != ChiperMethod.NONE) {
