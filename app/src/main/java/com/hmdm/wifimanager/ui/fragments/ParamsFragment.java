@@ -111,7 +111,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
 
         Presenter.getInstance().setiParamsView(this);
 
-        updateUI(Presenter.getInstance().getLastScan() == null ? null : Presenter.getInstance().getLastScan().get(item.scanResult.SSID),
+        updateUI(Presenter.getInstance().getLastScanSSIDMap() == null ? null : Presenter.getInstance().getLastScanSSIDMap().get(item.scanResult.SSID),
                 Presenter.getInstance().getConnectionInfo(), Presenter.getInstance().getConnectedState());
 
         passwordVisibility.setOnClickListener(this);
@@ -138,7 +138,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
             level.setText(getResources().getStringArray(R.array.signal_levels)[WifiManager.calculateSignalLevel(scanResult.level,
                     getResources().getStringArray(R.array.signal_levels).length)]);
 
-            if (connectionInfo != null && Utils.getSSIDWithoutQuotes(connectionInfo.getSSID()).equals(item.scanResult.SSID)
+            if (connectionInfo != null && Utils.unquote(connectionInfo.getSSID()).equals(item.scanResult.SSID)
                     && connectedState == NetworkInfo.State.CONNECTED) {
                 speed.setText(String.format(Locale.US, "%d %s", connectionInfo.getLinkSpeed(), getString(R.string.mbps)));
                 ip.setText(String.format(Locale.US, "%d.%d.%d.%d", (connectionInfo.getIpAddress() & 0xff),
@@ -158,7 +158,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
             Capabilities capabilities = Capabilities.parse(item.scanResult.capabilities);
             encryption.setText(capabilities.format());
 
-            if (connectionInfo != null && Utils.getSSIDWithoutQuotes(connectionInfo.getSSID()).equals(item.scanResult.SSID)
+            if (connectionInfo != null && Utils.unquote(connectionInfo.getSSID()).equals(item.scanResult.SSID)
                     && connectedState == NetworkInfo.State.CONNECTED) {
                 showPassword(GONE);
 
@@ -177,7 +177,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
             else {
                 if (!capabilities.isOpen()) {
                     if (TextUtils.isEmpty(password.getText().toString()) && !item.isWrong)
-                        password.setText(Presenter.getInstance().getPasswordFromAllowed(item.scanResult.SSID));
+                        password.setText(Presenter.getInstance().getPasswordFromAllowed(item.scanResult.SSID, item.scanResult.BSSID));
                     showPassword(VISIBLE);
                 }
                 else

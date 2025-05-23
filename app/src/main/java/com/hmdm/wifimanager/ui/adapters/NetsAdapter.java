@@ -24,7 +24,6 @@ package com.hmdm.wifimanager.ui.adapters;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,8 +79,8 @@ public class NetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             else
                 banned.setVisibility(View.GONE);
 
-            boolean isActive = connectionInfo != null && Utils.getSSIDWithoutQuotes(connectionInfo.getSSID()) != null
-                    && Utils.getSSIDWithoutQuotes(connectionInfo.getSSID()).equals(items.get(position).scanResult.SSID)
+            boolean isActive = connectionInfo != null && Utils.unquote(connectionInfo.getSSID()) != null
+                    && Utils.unquote(connectionInfo.getSSID()).equals(items.get(position).scanResult.SSID)
                     && connectedState != NetworkInfo.State.DISCONNECTED
                     && connectedState != NetworkInfo.State.SUSPENDED && connectedState != NetworkInfo.State.UNKNOWN;
 
