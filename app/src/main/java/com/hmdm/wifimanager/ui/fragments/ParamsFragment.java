@@ -26,7 +26,6 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -111,7 +110,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
 
         Presenter.getInstance().setiParamsView(this);
 
-        updateUI(Presenter.getInstance().getLastScanSSIDMap() == null ? null : Presenter.getInstance().getLastScanSSIDMap().get(item.scanResult.SSID),
+        updateUI(Presenter.getInstance().getLastScanSSIDMap() == null ? null : Presenter.getInstance().getLastScanSSIDMap().get(item.getSSID()),
                 Presenter.getInstance().getConnectionInfo(), Presenter.getInstance().getConnectedState());
 
         passwordVisibility.setOnClickListener(this);
@@ -133,12 +132,12 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
         dividerMAC.setVisibility(visibility);
     }
 
-    private void updateUI(ScanResult scanResult, @Nullable WifiInfo connectionInfo, NetworkInfo.State connectedState) {
-        if (scanResult != null) {
-            level.setText(getResources().getStringArray(R.array.signal_levels)[WifiManager.calculateSignalLevel(scanResult.level,
+    private void updateUI(WiFiItem newItem, @Nullable WifiInfo connectionInfo, NetworkInfo.State connectedState) {
+        if (newItem != null) {
+            level.setText(getResources().getStringArray(R.array.signal_levels)[WifiManager.calculateSignalLevel(newItem.getLevel(),
                     getResources().getStringArray(R.array.signal_levels).length)]);
 
-            if (connectionInfo != null && Utils.unquote(connectionInfo.getSSID()).equals(item.scanResult.SSID)
+            if (connectionInfo != null && Utils.unquote(connectionInfo.getSSID()).equals(item.getSSID())
                     && connectedState == NetworkInfo.State.CONNECTED) {
                 speed.setText(String.format(Locale.US, "%d %s", connectionInfo.getLinkSpeed(), getString(R.string.mbps)));
                 ip.setText(String.format(Locale.US, "%d.%d.%d.%d", (connectionInfo.getIpAddress() & 0xff),
@@ -155,19 +154,19 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
                 showMAC(GONE, "");
             }
 
-            Capabilities capabilities = Capabilities.parse(item.scanResult.capabilities);
+            Capabilities capabilities = Capabilities.parse(item.getCapabilities());
             if(capabilities.format().equals("OPEN"))
                 encryption.setText(getString(R.string.encryption_open));
             else
                 encryption.setText(capabilities.format());
 
 
-            if (connectionInfo != null && Utils.unquote(connectionInfo.getSSID()).equals(item.scanResult.SSID)
+            if (connectionInfo != null && Utils.unquote(connectionInfo.getSSID()).equals(item.getSSID())
                     && connectedState == NetworkInfo.State.CONNECTED) {
                 showPassword(GONE);
 
                 if (!capabilities.isOpen()) {
-                    if (item.userActions) {
+                    if (item.hasUserAction()) {
                         action.setText(getString(R.string.delete_network));
                         action.setVisibility(VISIBLE);
                     } else
@@ -180,8 +179,8 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
             }
             else {
                 if (!capabilities.isOpen()) {
-                    if (TextUtils.isEmpty(password.getText().toString()) && !item.isWrong)
-                        password.setText(Presenter.getInstance().getPasswordFromAllowed(item.scanResult.SSID, item.scanResult.BSSID));
+                    if (TextUtils.isEmpty(password.getText().toString()) && !item.isWrong())
+                        password.setText(Presenter.getInstance().getPasswordFromAllowed(item.getSSID(), item.getBSSID()));
                     showPassword(VISIBLE);
                 }
                 else
@@ -214,11 +213,11 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
     }
 
     @Override
-    public void onParamsResults(Map<String, ScanResult> lastScan, WifiInfo connectionInfo, NetworkInfo.State connectedState) {
+    public void onParamsResults(Map<String, WiFiItem> lastScan, WifiInfo connectionInfo, NetworkInfo.State connectedState) {
         MDMService.Log.d(TAG, "onParamsResults(); lastScan: " + lastScan.size() + "; connectionInfo: " + (connectionInfo == null ? "null" : connectionInfo.toString())
                 + "; connectedState: " + (connectedState == null ? "null" : connectedState.toString()));
 
-        updateUI(lastScan.get(item.scanResult.SSID), connectionInfo, connectedState);
+        updateUI(lastScan.get(item.getSSID()), connectionInfo, connectedState);
     }
 
     @Override
@@ -285,7 +284,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
         }
 
         if (Presenter.getInstance().getConnectionInfo() == null
-                && !Capabilities.parse(item.scanResult.capabilities).isOpen()
+                && !Capabilities.parse(item.getCapabilities()).isOpen()
                 && (TextUtils.isEmpty(password.getText().toString()) || password.getText().toString().length() < 8)) {
             Toast.makeText(getActivity(), getString(R.string.password_toast), Toast.LENGTH_LONG).show();
             return;
@@ -293,7 +292,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
 
         Utils.hideKeyboardFrom(getActivity(), password);
 
-        MDMService.Log.d(TAG, "onClick(); action; item.scanResult: " + item.scanResult.toString()
+        MDMService.Log.d(TAG, "onClick(); action; item.SSID: " + item.getSSID()
                 + "; password: " + password);
 
         action.setEnabled(false);
@@ -302,7 +301,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
         else
             action.setText(getString(R.string.connection));
 
-        Presenter.getInstance().userAction(item.scanResult, password.getText().toString());
+        Presenter.getInstance().userAction(item, password.getText().toString());
         password.setText("");
     }
 }

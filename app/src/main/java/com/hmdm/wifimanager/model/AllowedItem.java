@@ -38,9 +38,20 @@ public class AllowedItem {
      */
     public String password;
     /**
-     * This flag shows the coincidence of the password from 'password' field and the password of network with this SSID/BSSID.
+     * True if the network is hidden
      */
-    public boolean wrong = false;
+    public boolean hidden;
+    /**
+     * Security type (should be explicitly provided for hidden networks)
+     */
+    public String security;
+    /**
+     * This flag shows the coincidence of the password from 'password' field
+     * and the password of network with this SSID/BSSID.
+     * This flag is set when we receive an authentication error,
+     * and we do not attempt to connect with this network any more.
+     */
+    public boolean wrongPassword = false;
 
     public AllowedItem() {}
 

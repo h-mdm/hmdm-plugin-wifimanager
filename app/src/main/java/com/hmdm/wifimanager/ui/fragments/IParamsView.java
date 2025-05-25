@@ -22,8 +22,10 @@
 package com.hmdm.wifimanager.ui.fragments;
 
 import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
+
+import com.hmdm.wifimanager.model.WiFiItem;
+
 import java.util.Map;
 
 /**
@@ -36,7 +38,7 @@ public interface IParamsView {
      * @param connectionInfo
      * @param connectedState
      */
-    void onParamsResults(Map<String, ScanResult> lastScan, WifiInfo connectionInfo, NetworkInfo.State connectedState);
+    void onParamsResults(Map<String, WiFiItem> lastScan, WifiInfo connectionInfo, NetworkInfo.State connectedState);
 
     /**
      * Connection error.

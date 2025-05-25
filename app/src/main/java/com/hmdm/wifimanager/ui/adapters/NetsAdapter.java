@@ -34,11 +34,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hmdm.wifimanager.Presenter;
 import com.hmdm.wifimanager.R;
 import com.hmdm.wifimanager.Utils;
-import com.hmdm.wifimanager.model.Capabilities;
 import com.hmdm.wifimanager.model.WiFiItem;
-import com.hmdm.wifimanager.Presenter;
 
 import java.util.ArrayList;
 
@@ -74,13 +73,13 @@ public class NetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void onBindViewHolder(int position) {
-            if (!items.get(position).allowed)
+            if (!items.get(position).isAllowed())
                 banned.setVisibility(View.VISIBLE);
             else
                 banned.setVisibility(View.GONE);
 
             boolean isActive = connectionInfo != null && Utils.unquote(connectionInfo.getSSID()) != null
-                    && Utils.unquote(connectionInfo.getSSID()).equals(items.get(position).scanResult.SSID)
+                    && Utils.unquote(connectionInfo.getSSID()).equals(items.get(position).getSSID())
                     && connectedState != NetworkInfo.State.DISCONNECTED
                     && connectedState != NetworkInfo.State.SUSPENDED && connectedState != NetworkInfo.State.UNKNOWN;
 
@@ -88,33 +87,26 @@ public class NetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 name.setTextColor(name.getContext().getResources().getColor(R.color.color1));
                 state.setTextColor(state.getContext().getResources().getColor(R.color.color1));
 
-                signal.setImageResource(SIGNALS_ACTIVE[WifiManager.calculateSignalLevel(items.get(position).scanResult.level, SIGNALS_ACTIVE.length)]);
+                signal.setImageResource(SIGNALS_ACTIVE[WifiManager.calculateSignalLevel(items.get(position).getLevel(), SIGNALS_ACTIVE.length)]);
             }
             else {
                 name.setTextColor(name.getContext().getResources().getColor(android.R.color.black));
                 state.setTextColor(state.getContext().getResources().getColor(R.color.color4));
 
-                signal.setImageResource(SIGNALS[WifiManager.calculateSignalLevel(items.get(position).scanResult.level, SIGNALS.length)]);
+                signal.setImageResource(SIGNALS[WifiManager.calculateSignalLevel(items.get(position).getLevel(), SIGNALS.length)]);
             }
 
-            name.setText(items.get(position).scanResult.SSID);
+            name.setText(items.get(position).getSSID());
 
-            Capabilities capabilities = Capabilities.parse(items.get(position).scanResult.capabilities);
-
+            boolean hasEncryption = items.get(position).hasEncryption();
             if (isActive)
                 state.setText(state.getResources().getString(R.string.connected));
             else {
-                if (!capabilities.isOpen())
-                    state.setText(state.getResources().getString(R.string.have_protection));
-                else
-                    state.setText(state.getResources().getString(R.string.no_protection));
+                state.setText(hasEncryption ? state.getResources().getString(R.string.have_protection)
+                        : state.getResources().getString(R.string.no_protection));
             }
 
-            if (!capabilities.isOpen()) {
-                lock.setVisibility(View.VISIBLE);
-            } else {
-                lock.setVisibility(View.GONE);
-            }
+            lock.setVisibility(hasEncryption ? View.VISIBLE : View.GONE);
 
             root.setOnClickListener(new View.OnClickListener() {
                 @Override

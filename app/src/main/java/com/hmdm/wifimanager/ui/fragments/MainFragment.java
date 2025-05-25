@@ -143,10 +143,10 @@ public class MainFragment extends Fragment implements IMainView,
 
     @Override
     public void onNetClick(WiFiItem item) {
-        MDMService.Log.d(TAG, "onItemClick(); item.scanResult.SSID: " + item.scanResult.SSID
-                + "; item.userActions: " + item.userActions + "; item.allowed: " + item.allowed);
+        MDMService.Log.d(TAG, "onItemClick(); item.SSID: " + item.getSSID()
+                + "; item.forgettable: " + item.hasUserAction() + "; item.allowed: " + item.isAllowed());
 
-        if (item.allowed && getActivity() != null && getActivity() instanceof MainActivity) {
+        if (item.isAllowed() && getActivity() != null && getActivity() instanceof MainActivity) {
             ((MainActivity)getActivity()).showWiFiParams(item);
         }
     }

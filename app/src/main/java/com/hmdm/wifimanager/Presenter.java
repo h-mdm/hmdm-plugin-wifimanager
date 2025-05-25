@@ -36,6 +36,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.MacAddress;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.SupplicantState;
@@ -51,7 +53,7 @@ import androidx.annotation.Nullable;
 
 import com.hmdm.MDMService;
 import com.hmdm.wifimanager.model.AllowedItem;
-import com.hmdm.wifimanager.model.Capabilities;
+import com.hmdm.wifimanager.model.HiddenWiFiItem;
 import com.hmdm.wifimanager.model.MDMConfig;
 import com.hmdm.wifimanager.model.WiFiItem;
 import com.hmdm.wifimanager.ui.fragments.IMainView;
@@ -175,7 +177,7 @@ public class Presenter {
                             if (lastConfig != null && lastConfig.allowed != null && !TextUtils.isEmpty(tryConnectToSSID) && !TextUtils.isEmpty(tryConnectToBSSID)) {
                                 for (AllowedItem item : lastConfig.allowed) {
                                     if (tryConnectToSSID.equalsIgnoreCase(item.ssid) || tryConnectToBSSID.equalsIgnoreCase(item.bssid))
-                                        item.wrong = true;
+                                        item.wrongPassword = true;
                                 }
 
                                 tryConnectToSSID = "";
@@ -208,7 +210,7 @@ public class Presenter {
                             if (lastConfig != null && lastConfig.allowed != null && !TextUtils.isEmpty(tryConnectToSSID) && !TextUtils.isEmpty(tryConnectToBSSID)) {
                                 for (AllowedItem item : lastConfig.allowed) {
                                     if (tryConnectToSSID.equalsIgnoreCase(item.ssid) || tryConnectToBSSID.equalsIgnoreCase(item.bssid))
-                                        item.wrong = true;
+                                        item.wrongPassword = true;
                                 }
 
                                 tryConnectToSSID = "";
@@ -261,8 +263,8 @@ public class Presenter {
     /**
      * List for latest scanning results.
      */
-    private Map<String, ScanResult> lastScanSSIDMap;
-    private Map<String, ScanResult> lastScanBSSIDMap;
+    private Map<String, WiFiItem> lastScanSSIDMap;
+    private Map<String, WiFiItem> lastScanBSSIDMap;
     private long startScanTime = 0;
     private int lastWiFiState;
     /**
@@ -401,13 +403,22 @@ public class Presenter {
         }
     }
 
-    private Map<String, ScanResult> createSSIDMap(List<ScanResult> list) {
-        Map<String, ScanResult> map = new HashMap<>();
+    private Map<String, WiFiItem> createSSIDMap(List<ScanResult> list) {
+        Map<String, WiFiItem> map = new HashMap<>();
 
         if (list != null && list.size() > 0) {
             for (ScanResult item : list) {
                 if (!TextUtils.isEmpty(item.SSID)) {
-                    map.put(item.SSID, item);
+                    map.put(item.SSID, new WiFiItem(item));
+                }
+            }
+        }
+
+        if (lastConfig != null) {
+            for (AllowedItem item : lastConfig.allowed) {
+                // the "hidden" flag is used only if network is not visible in the scan results
+                if (item.hidden && !map.containsKey(item.ssid) && (!TextUtils.isEmpty(item.ssid) || !TextUtils.isEmpty(item.bssid))) {
+                    map.put(item.ssid, new HiddenWiFiItem(item.ssid, item.security));
                 }
             }
         }
@@ -415,13 +426,13 @@ public class Presenter {
         return map;
     }
 
-    private Map<String, ScanResult> createBSSIDMap(List<ScanResult> list) {
-        Map<String, ScanResult> map = new HashMap<>();
+    private Map<String, WiFiItem> createBSSIDMap(List<ScanResult> list) {
+        Map<String, WiFiItem> map = new HashMap<>();
 
         if (list != null && list.size() > 0) {
             for (ScanResult item : list) {
                 if (!TextUtils.isEmpty(item.BSSID)) {
-                    map.put(item.BSSID, item);
+                    map.put(item.BSSID, new WiFiItem(item));
                 }
             }
         }
@@ -448,7 +459,7 @@ public class Presenter {
 
                     if (lastConfig.allowed != null) {
                         for (AllowedItem item : lastConfig.allowed) {
-                            ScanResult scanResult = null;
+                            WiFiItem scanResult = null;
 
                             // Get the parameters of the access point for the current WiFi connection
                             if (!TextUtils.isEmpty(item.ssid)
@@ -488,7 +499,8 @@ public class Presenter {
                     boolean allowed = false;
 
                     // Check if the connected network is password protected
-                    if (hasEncryption(getScanResultBySSID(Utils.unquote(connectionInfo.getSSID()))))
+                    WiFiItem current = getScanResultBySSID(Utils.unquote(connectionInfo.getSSID()));
+                    if (current.hasEncryption())
                         allowed = true;
                     else {
                         if (lastConfig.allowed != null) {
@@ -556,8 +568,8 @@ public class Presenter {
         if (iMainView != null) iMainView.onSetConnectionParams(connectionInfo, connectedState);
     }
 
-    private ScanResult getScanResultBySSID(String ssid) {
-        ScanResult result = null;
+    private WiFiItem getScanResultBySSID(String ssid) {
+        WiFiItem result = null;
 
         if (wifiManager != null && ssid != null) {
             List<ScanResult> scanResults = wifiManager.getScanResults();
@@ -565,7 +577,7 @@ public class Presenter {
             if (scanResults != null && scanResults.size() > 0) {
                 for (ScanResult item: scanResults) {
                     if (!TextUtils.isEmpty(item.SSID) && item.SSID.equalsIgnoreCase(ssid)) {
-                        result = item;
+                        result = new WiFiItem(item);
                         break;
                     }
                 }
@@ -578,8 +590,8 @@ public class Presenter {
         return result;
     }
 
-    private ScanResult getScanResultByBSSID(String bssid) {
-        ScanResult result = null;
+    private WiFiItem getScanResultByBSSID(String bssid) {
+        WiFiItem result = null;
 
         if (wifiManager != null) {
             List<ScanResult> scanResults = wifiManager.getScanResults();
@@ -587,7 +599,7 @@ public class Presenter {
             if (scanResults != null && scanResults.size() > 0) {
                 for (ScanResult item: scanResults) {
                     if (!TextUtils.isEmpty(item.BSSID) && item.BSSID.equalsIgnoreCase(bssid)) {
-                        result = item;
+                        result = new WiFiItem(item);
                         break;
                     }
                 }
@@ -609,24 +621,24 @@ public class Presenter {
         if (wifiManager != null && lastScanSSIDMap != null) {
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
             if (list != null) {
-                ArrayList<ScanResult> filtered = new ArrayList<>();
+                ArrayList<WiFiItem> filtered = new ArrayList<>();
                 for (WifiConfiguration config : list) {
-                    if (lastScanSSIDMap.containsKey(config.SSID)
-                            && (hasEncryption(lastScanSSIDMap.get(config.SSID)) || isAllowed(config.SSID, config.BSSID))) {
+                    WiFiItem item = lastScanSSIDMap.get(config.SSID);
+                    if (item != null && (item.hasEncryption() || isAllowed(config.SSID, config.BSSID))) {
                         filtered.add(lastScanSSIDMap.get(config.SSID));
                     }
                 }
 
                 if (filtered.size() > 0) {
-                    Collections.sort(filtered, new Comparator<ScanResult>() {
+                    Collections.sort(filtered, new Comparator<WiFiItem>() {
                         @Override
-                        public int compare(ScanResult o1, ScanResult o2) {
-                            return o1.level - o2.level;
+                        public int compare(WiFiItem o1, WiFiItem o2) {
+                            return o1.getLevel() - o2.getLevel();
                         }
                     });
 
                     for (WifiConfiguration config : list) {
-                        if (config.SSID.equalsIgnoreCase(filtered.get(0).SSID) && !isWrong(config.SSID, config.BSSID))
+                        if (config.SSID.equalsIgnoreCase(filtered.get(0).getSSID()) && !isWrong(config.SSID, config.BSSID))
                             return config.networkId;
                     }
                 }
@@ -686,32 +698,58 @@ public class Presenter {
         }
     }
 
+    private boolean isWiFiConnected() {
+        Context context = WFMApp.getContext().getApplicationContext();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            return networkInfo != null && networkInfo.isConnected();
+        } else {
+            Network network = connectivityManager.getActiveNetwork();
+            NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+
+            return capabilities != null &&
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+        }
+    }
+
     private void tryConnectToAllowed() {
         if (wifiManager != null && lastScanSSIDMap != null && lastConfig != null && lastConfig.allowed != null) {
             for (AllowedItem item : lastConfig.allowed) {
-                if ((lastScanSSIDMap.containsKey(item.ssid) || lastScanBSSIDMap.containsKey(item.bssid)) && !item.wrong) {
-                    ScanResult network = item.ssid != null ? lastScanSSIDMap.get(item.ssid) : lastScanBSSIDMap.get(item.bssid);
+                if ((lastScanSSIDMap.containsKey(item.ssid) || lastScanBSSIDMap.containsKey(item.bssid)) && !item.wrongPassword) {
+                    WiFiItem network = item.ssid != null ? lastScanSSIDMap.get(item.ssid) : lastScanBSSIDMap.get(item.bssid);
                     if (network != null) {
                         // Search in saved
                         int id = -1;
-                        WifiConfiguration config = searchConfigured(network.SSID);
+                        WifiConfiguration config = searchConfigured(network.getSSID());
 
                         // Save if not found
                         if (config == null) {
                             config = new WifiConfiguration();
-                            config.SSID = "\"" + network.SSID + "\"";
-                            config.BSSID = network.BSSID;
-
-                            setupSecurity(network.capabilities, config, item.password);
-
+                            config.SSID = "\"" + network.getSSID() + "\"";
+                            if (!TextUtils.isEmpty(network.getBSSID())) {
+                                config.BSSID = network.getBSSID();
+                            }
+                            config.hiddenSSID = network.isHidden();
+                            setupSecurity(network.getCapabilities(), config, item.password);
                             id = wifiManager.addNetwork(config);
+                        } else {
+                            id = config.networkId;
                         }
 
                         if (id != -1) {
                             tryConnectToId = id;
-                            if (connectedState != NetworkInfo.State.DISCONNECTED) wifiManager.disconnect();
-                            wifiManager.enableNetwork(id, true);
-                            wifiManager.reconnect();
+                            if (connectedState != NetworkInfo.State.DISCONNECTED) {
+                                wifiManager.disconnect();
+                            } else {
+                                wifiManager.enableNetwork(id, true);
+                                if (!network.isHidden()) {
+                                    wifiManager.reconnect();
+                                }
+                            }
+                            break;
                         }
                     }
                 }
@@ -723,16 +761,16 @@ public class Presenter {
         if (wifiManager != null && lastScanSSIDMap != null && lastConfig != null && lastConfig.allowed != null) {
             for (AllowedItem item : lastConfig.allowed) {
                 if (lastScanSSIDMap.containsKey(item.ssid)) {
-                    ScanResult network = lastScanSSIDMap.get(item.ssid);
+                    WiFiItem network = lastScanSSIDMap.get(item.ssid);
                     if (network != null) {
                         int id = -1;
-                        WifiConfiguration config = searchConfigured(network.SSID);
+                        WifiConfiguration config = searchConfigured(network.getSSID());
                         // Save if not found
                         if (config == null) {
                             config = new WifiConfiguration();
-                            config.SSID = "\"" + network.SSID + "\"";
+                            config.SSID = "\"" + network.getSSID() + "\"";
 
-                            setupSecurity(network.capabilities, config, item.password);
+                            setupSecurity(network.getCapabilities(), config, item.password);
 
                             id = wifiManager.addNetwork(config);
                         }
@@ -740,13 +778,6 @@ public class Presenter {
                 }
             }
         }
-    }
-
-    private boolean hasEncryption(ScanResult result) {
-        return !Capabilities.parse(result.capabilities).isOpen();
-        /*return result != null
-                && (result.capabilities.contains("WEP") || result.capabilities.contains("WPA")
-                || result.capabilities.contains("WPA2") || result.capabilities.contains("WPA3"));*/
     }
 
     @Nullable
@@ -772,33 +803,50 @@ public class Presenter {
             result.add(null);
         else {
             if (lastConfig == null) {
-                for (ScanResult item : lastScanSSIDMap.values())
-                    result.add(new WiFiItem(item, true, true, false));
+                for (WiFiItem item : lastScanSSIDMap.values()) {
+                    WiFiItem newItem = item.clone();
+                    newItem.setAllowed(true);
+                    newItem.setUserAction(true);
+                    newItem.setWrong(false);
+                    result.add(newItem);
+                }
             }
             else {
                 // If only networks from the list are allowed
                 if (!lastConfig.allAllowed) {
                     if (lastConfig.allowed != null) {
-                        for (ScanResult item : lastScanSSIDMap.values()) {
-                            boolean isAllowed = isAllowed(item.SSID, item.BSSID);
-                            result.add(new WiFiItem(item, isAllowed, !(isAllowed && hasEncryption(item)), isWrong(item.SSID, item.BSSID)));
+                        for (WiFiItem item : lastScanSSIDMap.values()) {
+                            WiFiItem newItem = item.clone();
+                            boolean isAllowed = isAllowed(item.getSSID(), item.getBSSID());
+                            newItem.setAllowed(isAllowed);
+                            newItem.setUserAction(!(isAllowed && item.hasEncryption()));
+                            newItem.setWrong(isWrong(item.getSSID(), item.getBSSID()));
+                            result.add(newItem);
                         }
                     }
                 }
                 // Networks from the list and password-encrypted networks are allowed
                 else if (!lastConfig.freeAllowed) {
                     if (lastConfig.allowed != null) {
-                        for (ScanResult item : lastScanSSIDMap.values()) {
-                            boolean isAllowed = isAllowed(item.SSID, item.BSSID);
-                            result.add(new WiFiItem(item,
-                                    isAllowed || hasEncryption(item), !(isAllowed && hasEncryption(item)), isWrong(item.SSID, item.BSSID)));
+                        for (WiFiItem item : lastScanSSIDMap.values()) {
+                            WiFiItem newItem = item.clone();
+                            boolean isAllowed = isAllowed(item.getSSID(), item.getBSSID());
+                            newItem.setAllowed(isAllowed || item.hasEncryption());
+                            newItem.setUserAction(!(isAllowed && item.hasEncryption()));
+                            newItem.setWrong(isWrong(item.getSSID(), item.getBSSID()));
+                            result.add(newItem);
                         }
                     }
                 }
                 // All networks allowed
                 else {
-                    for (ScanResult item : lastScanSSIDMap.values())
-                        result.add(new WiFiItem(item, true, true, false));
+                    for (WiFiItem item : lastScanSSIDMap.values()) {
+                        WiFiItem newItem = item.clone();
+                        newItem.setAllowed(true);
+                        newItem.setUserAction(true);
+                        newItem.setWrong(false);
+                        result.add(newItem);
+                    }
                 }
             }
         }
@@ -844,20 +892,20 @@ public class Presenter {
             connectionInfo = null;
     }
 
-    public void userAction(ScanResult scanResult, String password) {
+    public void userAction(WiFiItem network, String password) {
         if (connectionInfo != null) {
-            boolean connectToOther = !Utils.unquote(connectionInfo.getSSID()).equalsIgnoreCase(scanResult.SSID);
+            boolean connectToOther = !Utils.unquote(connectionInfo.getSSID()).equalsIgnoreCase(network.getSSID());
 
             wifiManager.disableNetwork(connectionInfo.getNetworkId());
             wifiManager.removeNetwork(connectionInfo.getNetworkId());
             wifiManager.disconnect();
 
             if (connectToOther) {
-                connectWifi(scanResult, password);
+                connectWifi(network, password);
             }
         }
         else {
-            connectWifi(scanResult, password);
+            connectWifi(network, password);
         }
     }
 
@@ -897,76 +945,48 @@ public class Presenter {
     public boolean isWrong(String ssid, String bssid) {
         if (lastConfig != null && lastConfig.allowed != null) {
             for (AllowedItem item : lastConfig.allowed) {
-                if (ssid.equalsIgnoreCase(item.ssid) || bssid.equalsIgnoreCase(item.bssid))
-                    return item.wrong;
+                if ((ssid != null && ssid.equalsIgnoreCase(item.ssid)) || (bssid != null && bssid.equalsIgnoreCase(item.bssid)))
+                    return item.wrongPassword;
             }
         }
         return false;
     }
 
-    private boolean connectWifi(ScanResult network, String password) {
-        if (!hasEncryption(network)) {
-            // Search in saved networks
-            WifiConfiguration config = searchConfigured(network.SSID);
+    private boolean connectWifi(WiFiItem network, String password) {
+        // Search in saved networks
+        WifiConfiguration config = searchConfigured(network.getSSID());
 
-            // Save if not found
-            int id = -1;
-            if (config == null) {
-                config = new WifiConfiguration();
-                config.SSID = "\"" + network.SSID + "\"";
-
-                setupSecurity(network.capabilities, config, password);
-
-                id = wifiManager.addNetwork(config);
-            }
-
-            // Connect
-            if (id != -1) {
-                tryConnectToId = id;
-                tryConnectToSSID = network.SSID;
-                tryConnectToBSSID = network.BSSID;
-                if (connectedState != NetworkInfo.State.DISCONNECTED) wifiManager.disconnect();
-                wifiManager.enableNetwork(id, true);
-                wifiManager.reconnect();
-            }
+        // Save if not found
+        int id = -1;
+        if (config == null) {
+            config = new WifiConfiguration();
+            config.SSID = "\"" + network.getSSID() + "\"";
+            config.hiddenSSID = network.isHidden();
+            setupSecurity(network.getCapabilities(), config, password);
+            id = wifiManager.addNetwork(config);
+        } else {
+            id = config.networkId;
         }
-        else {
-            // Search in saved networks
-            int id = -1;
-            WifiConfiguration config = null;
 
-            if (!isWrong(network.SSID, network.BSSID))
-                config = searchConfigured(network.SSID);
-
-            // Save if not found
-            if (config == null) {
-                config = new WifiConfiguration();
-                config.SSID = "\"" + network.SSID + "\"";
-
-                setupSecurity(network.capabilities, config, password);
-
-                id = wifiManager.addNetwork(config);
+        // Connect
+        if (id != -1) {
+            tryConnectToId = id;
+            tryConnectToSSID = network.getSSID();
+            tryConnectToBSSID = network.getBSSID();
+            if (connectedState != NetworkInfo.State.DISCONNECTED) {
+                wifiManager.disconnect();
             }
-            // Connect
-            if (id != -1) {
-                tryConnectToId = id;
-                tryConnectToSSID = network.SSID;
-                tryConnectToBSSID = network.BSSID;
-
-                if (connectedState != NetworkInfo.State.DISCONNECTED) {
-                    wifiManager.disconnect();
-                }
-
-                wifiManager.enableNetwork(id, true);
+            wifiManager.enableNetwork(id, true);
+            if (!network.isHidden()) {
+                // for hidden networks, reconnect should be delayed to let the system save the network first
                 wifiManager.reconnect();
-                //tryConnect = true;
             }
         }
 
         return true;
     }
 
-    public Map<String, ScanResult> getLastScanSSIDMap() {
+    public Map<String, WiFiItem> getLastScanSSIDMap() {
         return lastScanSSIDMap;
     }
 

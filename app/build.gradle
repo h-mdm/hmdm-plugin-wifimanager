@@ -36,8 +36,8 @@ android {
         //
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
-        versionCode 22
-        versionName "1.22"
+        versionCode 23
+        versionName "1.23"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         // To use WiFi suggestion API on Android 11 and 12, set this parameter to true

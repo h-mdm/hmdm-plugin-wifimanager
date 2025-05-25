@@ -32,32 +32,114 @@ public class WiFiItem implements Parcelable {
     /**
      * Access point parameters.
      */
-    public ScanResult scanResult;
+    protected ScanResult scanResult;
     /**
      * Is it allowed or forbidden to connect to this network.
      */
-    public boolean allowed;
+    protected boolean allowed;
     /**
      * Is it allowed or forbidden to forget this network.
      */
-    public boolean userActions;
+    protected boolean userAction;
     /**
      * Config contains a wrong password.
      */
-    public boolean isWrong;
+    protected boolean wrong;
 
-    public WiFiItem(ScanResult scanResult, boolean allowed, boolean userActions, boolean isWrong) {
+    public void setScanResult(ScanResult scanResult) {
+        this.scanResult = scanResult;
+    }
+
+    public boolean isAllowed() {
+        return allowed;
+    }
+
+    public void setAllowed(boolean allowed) {
+        this.allowed = allowed;
+    }
+
+    public boolean hasUserAction() {
+        return userAction;
+    }
+
+    public void setUserAction(boolean userAction) {
+        this.userAction = userAction;
+    }
+
+    public boolean isWrong() {
+        return wrong;
+    }
+
+    public void setWrong(boolean wrong) {
+        this.wrong = wrong;
+    }
+
+    public boolean isHidden() {
+        return false;
+    }
+
+    public String getSSID() {
+        if (scanResult == null) {
+            return "";
+        }
+        return scanResult.SSID;
+    }
+
+    public String getBSSID() {
+        if (scanResult == null) {
+            return "";
+        }
+        return scanResult.BSSID;
+    }
+
+    public String getCapabilities() {
+        if (scanResult == null) {
+            return "";
+        }
+        return scanResult.capabilities;
+    }
+
+    public boolean hasEncryption() {
+        if (scanResult == null) {
+            return false;
+        }
+        return !Capabilities.parse(scanResult.capabilities).isOpen();
+    }
+
+    public int getLevel() {
+        if (scanResult == null) {
+            return 0;
+        }
+        return scanResult.level;
+    }
+
+    public WiFiItem() {}
+
+    public WiFiItem clone() {
+        WiFiItem item = new WiFiItem();
+        item.scanResult = scanResult;
+        item.allowed = allowed;
+        item.userAction = userAction;
+        item.wrong = wrong;
+        return item;
+    }
+
+    public WiFiItem(ScanResult scanResult, boolean allowed, boolean forgettable, boolean wrong) {
         this.scanResult = scanResult;
         this.allowed = allowed;
-        this.userActions = userActions;
-        this.isWrong = isWrong;
+        this.userAction = forgettable;
+        this.wrong = wrong;
+    }
+
+    public WiFiItem(ScanResult scanResult) {
+        this.scanResult = scanResult;
     }
 
     protected WiFiItem(Parcel in) {
         scanResult = in.readParcelable(ScanResult.class.getClassLoader());
         allowed = in.readByte() != 0;
-        userActions = in.readByte() != 0;
-        isWrong = in.readByte() != 0;
+        userAction = in.readByte() != 0;
+        wrong = in.readByte() != 0;
     }
 
     public static final Creator<WiFiItem> CREATOR = new Creator<WiFiItem>() {
@@ -81,7 +163,7 @@ public class WiFiItem implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(scanResult, flags);
         dest.writeByte((byte) (allowed ? 1 : 0));
-        dest.writeByte((byte) (userActions ? 1 : 0));
-        dest.writeByte((byte) (isWrong ? 1 : 0));
+        dest.writeByte((byte) (userAction ? 1 : 0));
+        dest.writeByte((byte) (wrong ? 1 : 0));
     }
 }

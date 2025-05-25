@@ -360,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
     public void showWiFiParams(WiFiItem item) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle(item.scanResult.SSID);
+        getSupportActionBar().setTitle(item.getSSID());
 
         hideFragment(MainFragment.class.getSimpleName());
         addFragment(ParamsFragment.newInstance(item), ParamsFragment.class.getSimpleName());
