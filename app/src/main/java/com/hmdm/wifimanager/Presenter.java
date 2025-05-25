@@ -459,22 +459,14 @@ public class Presenter {
 
                     if (lastConfig.allowed != null) {
                         for (AllowedItem item : lastConfig.allowed) {
-                            WiFiItem scanResult = null;
-
-                            // Get the parameters of the access point for the current WiFi connection
                             if (!TextUtils.isEmpty(item.ssid)
                                     && Utils.unquote(connectionInfo.getSSID()).equalsIgnoreCase(item.ssid)) {
-                                scanResult = getScanResultBySSID(Utils.unquote(connectionInfo.getSSID()));
+                                allowed = true;
                             }
                             else if (!TextUtils.isEmpty(item.bssid)
                                     && Utils.unquote(connectionInfo.getBSSID()).equalsIgnoreCase(item.bssid)) {
-                                scanResult = getScanResultByBSSID(Utils.unquote(connectionInfo.getBSSID()));
+                                allowed = true;
                             }
-
-                            if (scanResult == null)
-                                continue;
-
-                            allowed = true;
                             break;
                         }
                     }
@@ -743,11 +735,10 @@ public class Presenter {
                             tryConnectToId = id;
                             if (connectedState != NetworkInfo.State.DISCONNECTED) {
                                 wifiManager.disconnect();
-                            } else {
-                                wifiManager.enableNetwork(id, true);
-                                if (!network.isHidden()) {
-                                    wifiManager.reconnect();
-                                }
+                            }
+                            wifiManager.enableNetwork(id, true);
+                            if (!network.isHidden()) {
+                                wifiManager.reconnect();
                             }
                             break;
                         }
