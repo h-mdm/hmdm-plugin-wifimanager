@@ -34,6 +34,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
+import android.net.NetworkInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +49,7 @@ import com.hmdm.MDMPushHandler;
 import com.hmdm.MDMPushMessage;
 import com.hmdm.MDMService;
 import com.hmdm.wifimanager.BuildConfig;
+import com.hmdm.wifimanager.ExternalConfigLoader;
 import com.hmdm.wifimanager.Presenter;
 import com.hmdm.wifimanager.R;
 import com.hmdm.wifimanager.model.MDMConfig;
@@ -82,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
     private MDMService mdmService;
     private boolean mdmConnected = false;
     private PushHandler pushHandler;
+    private boolean provisioningConfigActive = false;
+    private MDMConfig provisioningConfig;
 
     private void initPreferences() {
          preferences = getApplicationContext().getSharedPreferences("com.hmdm.wifimanager.PREFERENCES", Context.MODE_PRIVATE);
@@ -185,6 +189,12 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
                 request.add(Manifest.permission.ACCESS_FINE_LOCATION);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                 request.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                request.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                request.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
             if (request.size() > 0 && doRequest) {
                 String[] permissions = new String[request.size()];
@@ -205,11 +215,11 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            needEnable = true;
             LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if (locationManager != null) {
-                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-                    needEnable = false;
+            if (locationManager == null) {
+                needEnable = true;
+            } else {
+                needEnable = !locationManager.isLocationEnabled();
             }
 
             if (needEnable) {
@@ -296,6 +306,12 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
                                 ArrayList<String> request = new ArrayList<>();
                                 request.add(Manifest.permission.ACCESS_FINE_LOCATION);
                                 request.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    request.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+                                }
+                                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                                    request.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                }
 
                                 String[] permissions = new String[request.size()];
                                 permissions = request.toArray(permissions);
@@ -377,20 +393,40 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
     }
 
     private void getConfig() {
+        NetworkInfo.State state = Presenter.getInstance().getConnectedState();
+        boolean wifiConnected = state == NetworkInfo.State.CONNECTED;
+        if (wifiConnected && provisioningConfigActive) {
+            provisioningConfigActive = false;
+            provisioningConfig = null;
+        }
         MDMConfig config = null;
-
-        if (mdmConnected) {
-            try {
-                config = new Gson().fromJson(MDMService.Preferences.get("config",
-                        "{\"allAllowed\":true,\"allowed\":[]}"), MDMConfig.class);
-            } catch (Exception e) {
-                e.printStackTrace();
-                config = null;
-                //showAlertNoConfig();
+        if (!wifiConnected) {
+            if (provisioningConfigActive && provisioningConfig != null) {
+                config = provisioningConfig;
+            } else {
+                config = new ExternalConfigLoader(this).loadIfPresent();
+                if (config != null) {
+                    provisioningConfigActive = true;
+                    provisioningConfig = config;
+                    Presenter.getInstance().setWiFiState(true);
+                }
             }
         }
-        else
-            mdmService.connect(this, this);
+
+        if (config == null) {
+            if (mdmConnected) {
+                try {
+                    config = new Gson().fromJson(MDMService.Preferences.get("config",
+                            "{\"allAllowed\":true,\"allowed\":[]}"), MDMConfig.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    config = null;
+                    //showAlertNoConfig();
+                }
+            }
+            else
+                mdmService.connect(this, this);
+        }
 
         if (config == null)
             config = new MDMConfig();
