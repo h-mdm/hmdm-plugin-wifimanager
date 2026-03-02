@@ -42,8 +42,10 @@ Sample configuration setting up automatic configuration of a specified WiFi netw
     {
         "allAllowed": false,
         "allowed": [
-            "ssid": "My Corporate WiFi",
-            "password": "Top$ecret"
+            {
+                "ssid": "My Corporate WiFi",
+                "password": "Top$ecret"
+            }
         ]
     }
 
