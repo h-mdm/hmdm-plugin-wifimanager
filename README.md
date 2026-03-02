@@ -23,8 +23,8 @@ Once you install this WiFi manager through Headwind MDM system, the list of allo
 The JSON configuration has the following format:
 
     {
-        "allAllowed": <boolean, determines if all networks are allowed, defaults to true>;
-        "freeAllowed": <boolean, works only if allAllowed is false, determines if non-protected networks are allowed, defaults to false>;
+        "allAllowed": <boolean, determines if all networks are allowed, defaults to true>,
+        "freeAllowed": <boolean, works only if allAllowed is false, determines if non-protected networks are allowed, defaults to false>,
         "allowed": [
             {
                 "ssid": "<SSID of the allowed network, required>",
