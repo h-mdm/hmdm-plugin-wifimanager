@@ -739,6 +739,8 @@ public class Presenter {
                             wifiManager.enableNetwork(id, true);
                             if (!network.isHidden()) {
                                 wifiManager.reconnect();
+                            } else {
+                                wifiManager.reassociate();
                             }
                             break;
                         }
@@ -971,6 +973,8 @@ public class Presenter {
             if (!network.isHidden()) {
                 // for hidden networks, reconnect should be delayed to let the system save the network first
                 wifiManager.reconnect();
+            } else {
+                wifiManager.reassociate();
             }
         }
 
@@ -986,7 +990,7 @@ public class Presenter {
     }
 
     public String getPasswordFromAllowed(String ssid, String bssid) {
-        if (lastConfig != null && lastConfig.allowed != null && !TextUtils.isEmpty(ssid) && !TextUtils.isEmpty(bssid)) {
+        if (lastConfig != null && lastConfig.allowed != null && (!TextUtils.isEmpty(ssid) || !TextUtils.isEmpty(bssid))) {
             for (AllowedItem item : lastConfig.allowed) {
                 if ((ssid.equalsIgnoreCase(item.ssid) || bssid.equalsIgnoreCase(item.bssid)) && !TextUtils.isEmpty(item.password))
                     return item.password;
@@ -1016,6 +1020,9 @@ public class Presenter {
             }
             if (item.bssid != null) {
                 builder.setBssid(MacAddress.fromString(item.bssid));
+            }
+            if (item.hidden) {
+                builder.setIsHiddenSsid(true);
             }
             if (item.password != null) {
                 builder.setWpa2Passphrase(item.password);
