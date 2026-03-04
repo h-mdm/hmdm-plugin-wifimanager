@@ -72,6 +72,7 @@ public class HiddenWiFiItem extends WiFiItem {
     @Override
     public String getCapabilities() {
         if (scanResult == null) {
+            //ScanResult.capabilities are conventionally wrapped by [ ], so a raw string may not work as expected
             if (security != null && !security.isEmpty() && !security.startsWith("[")) {
                 return "[" + security + "]";
             }
