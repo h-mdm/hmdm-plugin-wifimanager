@@ -72,6 +72,9 @@ public class HiddenWiFiItem extends WiFiItem {
     @Override
     public String getCapabilities() {
         if (scanResult == null) {
+            if (security != null && !security.isEmpty() && !security.startsWith("[")) {
+                return "[" + security + "]";
+            }
             return security;
         }
         return scanResult.capabilities;
