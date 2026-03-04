@@ -82,7 +82,7 @@ public class Capabilities {
                         }
                         else {
                             AuthMethod authMethod = null;
-                            if (item.contains("WPA3"))
+                            if (item.contains("WPA3") || item.contains("RSN"))
                                 authMethod = AuthMethod.WPA3;
                             else if (item.contains("WPA2"))
                                 authMethod = AuthMethod.WPA2;
