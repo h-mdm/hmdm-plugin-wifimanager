@@ -880,6 +880,22 @@ public class Presenter {
 
             if (connectionInfo != null && (connectedState == null || connectedState == NetworkInfo.State.DISCONNECTED))
                 connectionInfo = null;
+
+            // FIX: during scans or roaming, Android returns placeholder values
+            //   Prevent connecting to the network when the info is incomplete
+            //   SSID  = "<unknown ssid>"
+            //   BSSID = "02:00:00:00:00:00"
+            //   https://developer.android.com/reference/android/net/wifi/WifiInfo
+            if (connectionInfo != null) {
+                String ssid = Utils.unquote(connectionInfo.getSSID());
+                String bssid = connectionInfo.getBSSID();
+                if ("<unknown ssid>".equals(ssid)
+                        || "02:00:00:00:00:00".equals(bssid)
+                        || TextUtils.isEmpty(ssid)
+                        || TextUtils.isEmpty(bssid)) {
+                    connectionInfo = null;
+                }
+            }
         }
         else
             connectionInfo = null;
