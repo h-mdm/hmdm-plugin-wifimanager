@@ -64,4 +64,5 @@
         <item>Хороший</item>
         <item>Отличный</item>
     </string-array>
+    <string name="encryption_open">Нет</string>
 </resources>
