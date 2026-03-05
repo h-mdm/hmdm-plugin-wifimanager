@@ -739,6 +739,8 @@ public class Presenter {
                             wifiManager.enableNetwork(id, true);
                             if (!network.isHidden()) {
                                 wifiManager.reconnect();
+                            } else {
+                                wifiManager.reassociate();
                             }
                             break;
                         }
@@ -878,6 +880,22 @@ public class Presenter {
 
             if (connectionInfo != null && (connectedState == null || connectedState == NetworkInfo.State.DISCONNECTED))
                 connectionInfo = null;
+
+            // FIX: during scans or roaming, Android returns placeholder values
+            //   Prevent connecting to the network when the info is incomplete
+            //   SSID  = "<unknown ssid>"
+            //   BSSID = "02:00:00:00:00:00"
+            //   https://developer.android.com/reference/android/net/wifi/WifiInfo
+            if (connectionInfo != null) {
+                String ssid = Utils.unquote(connectionInfo.getSSID());
+                String bssid = connectionInfo.getBSSID();
+                if ("<unknown ssid>".equals(ssid)
+                        || "02:00:00:00:00:00".equals(bssid)
+                        || TextUtils.isEmpty(ssid)
+                        || TextUtils.isEmpty(bssid)) {
+                    connectionInfo = null;
+                }
+            }
         }
         else
             connectionInfo = null;
@@ -971,6 +989,8 @@ public class Presenter {
             if (!network.isHidden()) {
                 // for hidden networks, reconnect should be delayed to let the system save the network first
                 wifiManager.reconnect();
+            } else {
+                wifiManager.reassociate();
             }
         }
 
@@ -986,7 +1006,7 @@ public class Presenter {
     }
 
     public String getPasswordFromAllowed(String ssid, String bssid) {
-        if (lastConfig != null && lastConfig.allowed != null && !TextUtils.isEmpty(ssid) && !TextUtils.isEmpty(bssid)) {
+        if (lastConfig != null && lastConfig.allowed != null && (!TextUtils.isEmpty(ssid) || !TextUtils.isEmpty(bssid))) {
             for (AllowedItem item : lastConfig.allowed) {
                 if ((ssid.equalsIgnoreCase(item.ssid) || bssid.equalsIgnoreCase(item.bssid)) && !TextUtils.isEmpty(item.password))
                     return item.password;
@@ -1016,6 +1036,9 @@ public class Presenter {
             }
             if (item.bssid != null) {
                 builder.setBssid(MacAddress.fromString(item.bssid));
+            }
+            if (item.hidden) {
+                builder.setIsHiddenSsid(true);
             }
             if (item.password != null) {
                 builder.setWpa2Passphrase(item.password);
