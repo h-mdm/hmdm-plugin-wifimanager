@@ -34,6 +34,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -384,6 +385,7 @@ public class MainActivity extends AppCompatActivity implements MDMService.Result
                 config = new Gson().fromJson(MDMService.Preferences.get("config",
                         "{\"allAllowed\":true,\"allowed\":[]}"), MDMConfig.class);
             } catch (Exception e) {
+                Toast.makeText(this, R.string.config_error, Toast.LENGTH_LONG).show();
                 e.printStackTrace();
                 config = null;
                 //showAlertNoConfig();

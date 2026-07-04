@@ -56,6 +56,7 @@
     <string name="error">Chyba: </string>
     <string name="error_on_connection">Chyba připojení.</string>
     <string name="wifi_manage_error">Na Android 11 a výše použijte systémový Wifi Manager pro přepínání mezi sítěmi.</string>
+    <string name="config_error">Chyba při analýze konfigurace z MDM</string>
 
     <string-array name="signal_levels">
         <item>Žádný signál</item>
