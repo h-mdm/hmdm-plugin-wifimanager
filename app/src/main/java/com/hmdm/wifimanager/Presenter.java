@@ -459,15 +459,14 @@ public class Presenter {
 
                     if (lastConfig.allowed != null) {
                         for (AllowedItem item : lastConfig.allowed) {
-                            if (!TextUtils.isEmpty(item.ssid)
-                                    && Utils.unquote(connectionInfo.getSSID()).equalsIgnoreCase(item.ssid)) {
+                            if ((!TextUtils.isEmpty(item.ssid)
+                                    && Utils.unquote(connectionInfo.getSSID()).equalsIgnoreCase(item.ssid)) ||
+                                (!TextUtils.isEmpty(item.bssid)
+                                    && Utils.unquote(connectionInfo.getBSSID()).equalsIgnoreCase(item.bssid))
+                            ) {
                                 allowed = true;
+                                break;
                             }
-                            else if (!TextUtils.isEmpty(item.bssid)
-                                    && Utils.unquote(connectionInfo.getBSSID()).equalsIgnoreCase(item.bssid)) {
-                                allowed = true;
-                            }
-                            break;
                         }
                     }
 
