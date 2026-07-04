@@ -55,6 +55,7 @@ import com.hmdm.MDMService;
 import com.hmdm.wifimanager.model.AllowedItem;
 import com.hmdm.wifimanager.model.HiddenWiFiItem;
 import com.hmdm.wifimanager.model.MDMConfig;
+import com.hmdm.wifimanager.model.UserPasswordStorage;
 import com.hmdm.wifimanager.model.WiFiItem;
 import com.hmdm.wifimanager.ui.fragments.IMainView;
 import com.hmdm.wifimanager.ui.fragments.IParamsView;
@@ -900,6 +901,12 @@ public class Presenter {
             connectionInfo = null;
     }
 
+    public void updateUserPassword(WiFiItem network, String password, Context context) {
+        if (getPasswordFromAllowed(network.getSSID(), network.getBSSID(), false, context).isEmpty()) {
+            UserPasswordStorage.getInstance(context).savePassword(network.getBSSID(), password, context);
+        }
+    }
+
     public void userAction(WiFiItem network, String password) {
         if (connectionInfo != null) {
             boolean connectToOther = !Utils.unquote(connectionInfo.getSSID()).equalsIgnoreCase(network.getSSID());
@@ -1004,11 +1011,18 @@ public class Presenter {
         return connectionInfo;
     }
 
-    public String getPasswordFromAllowed(String ssid, String bssid) {
+    public String getPasswordFromAllowed(String ssid, String bssid, boolean userStorage, Context context) {
         if (lastConfig != null && lastConfig.allowed != null && (!TextUtils.isEmpty(ssid) || !TextUtils.isEmpty(bssid))) {
             for (AllowedItem item : lastConfig.allowed) {
-                if ((ssid.equalsIgnoreCase(item.ssid) || bssid.equalsIgnoreCase(item.bssid)) && !TextUtils.isEmpty(item.password))
-                    return item.password;
+                if ((ssid.equalsIgnoreCase(item.ssid) || bssid.equalsIgnoreCase(item.bssid))) {
+                    if (!TextUtils.isEmpty(item.password)) {
+                        return item.password;
+                    } else if (userStorage) {
+                        return UserPasswordStorage.getInstance(context).getPasswordForNetwork(bssid);
+                    } else {
+                        return "";
+                    }
+                }
             }
         }
 

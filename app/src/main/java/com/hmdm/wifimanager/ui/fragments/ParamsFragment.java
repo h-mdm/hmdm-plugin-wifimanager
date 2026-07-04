@@ -180,7 +180,8 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
             else {
                 if (!capabilities.isOpen()) {
                     if (TextUtils.isEmpty(password.getText().toString()) && !item.isWrong())
-                        password.setText(Presenter.getInstance().getPasswordFromAllowed(item.getSSID(), item.getBSSID()));
+                        password.setText(Presenter.getInstance().getPasswordFromAllowed(
+                                item.getSSID(), item.getBSSID(), true, getContext()));
                     showPassword(VISIBLE);
                 }
                 else
@@ -301,6 +302,7 @@ public class ParamsFragment extends Fragment implements IParamsView, View.OnClic
         else
             action.setText(getString(R.string.connection));
 
+        Presenter.getInstance().updateUserPassword(item, password.getText().toString(), getContext());
         Presenter.getInstance().userAction(item, password.getText().toString());
         password.setText("");
     }
